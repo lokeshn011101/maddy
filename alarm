@@ -1,4 +1,4 @@
-#MainActivity.java
+# MainActivity.java
 
 public class MainActivity extends AppCompatActivity {
     Button start;
@@ -83,7 +83,7 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-#MyBroadcastReceiver.java
+# MyBroadcastReceiver.java
 
 
 public class MyBroadcastReceiver extends BroadcastReceiver {
@@ -104,9 +104,51 @@ public class MyBroadcastReceiver extends BroadcastReceiver {
 
 
 
+# activity_main.xml
+
+
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.example.timerapplication.MainActivity">
+
+    <Button
+        android:id="@+id/button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Start"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="150dp" />
+
+    <Button
+        android:id="@+id/button1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Stop"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="80dp" />
+
+
+
+    <TimePicker
+        android:id="@+id/timePicker1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+</RelativeLayout>
+
+
+
+
+
+
 
 # AndroidManifest.xml
-
 
 
 <?xml version="1.0" encoding="utf-8"?>
