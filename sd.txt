@@ -1,0 +1,81 @@
+
+#MainActivity.java
+
+public class MainActivity extends AppCompatActivity {
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+    }
+
+    public void onReadBtnClick(View v) {
+        EditText fileName = findViewById(R.id.fileName);
+        EditText fileContent = findViewById(R.id.fileContent);
+        String line, text="";
+
+        File file = new File(getFilesDir(), fileName.getEditableText().toString());
+        try {
+            BufferedReader bufferedReader = new BufferedReader(new FileReader(file));
+            while((line = bufferedReader.readLine()) != null) {
+                text += line;
+            }
+            fileContent.setText(text);
+            Toast.makeText(MainActivity.this, "File Read!", Toast.LENGTH_SHORT).show();
+
+        } catch (FileNotFoundException e) {
+            Toast.makeText(MainActivity.this, "File does not exist.", Toast.LENGTH_LONG).show();
+        } catch (IOException e) {
+            Toast.makeText(MainActivity.this, "An error occurred while reading the file.", Toast.LENGTH_LONG).show();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void onWriteBtnClick(View v) {
+        EditText fileName = findViewById(R.id.fileName);
+        EditText fileContent = findViewById(R.id.fileContent);
+
+        File file = new File(getFilesDir(), fileName.getEditableText().toString());
+        try {
+            FileOutputStream fileOutputStream = new FileOutputStream(file);
+            fileOutputStream.write(fileContent.getEditableText().toString().getBytes());
+            fileOutputStream.close();
+            fileContent.setText("");
+            Toast.makeText(MainActivity.this, "File Written!", Toast.LENGTH_SHORT).show();
+
+        } catch (IOException e) {
+            Toast.makeText(MainActivity.this, "An error occurred while writing to the file.", Toast.LENGTH_LONG).show();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+}
+
+
+#Manifest.xml
+
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.example.learn_sd">
+
+    <application
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.Learn_sd">
+        <activity
+            android:name=".MainActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+    </application>
+
+</manifest>
+
