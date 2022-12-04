@@ -1,0 +1,134 @@
+#MainActivity.java
+
+public class MainActivity extends AppCompatActivity {
+    Button start;
+    Button stop;
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        start= findViewById(R.id.button);
+        stop= findViewById(R.id.button1);
+
+        start.setOnClickListener(new View.OnClickListener() {
+            @RequiresApi(api = Build.VERSION_CODES.O)
+            @Override
+            public void onClick(View view) {
+                startAlert();
+            }
+        });
+
+        stop.setOnClickListener(new View.OnClickListener() {
+            @RequiresApi(api = Build.VERSION_CODES.O)
+            @Override
+            public void onClick(View view) {
+                stop();
+            }
+        });
+
+
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    public void startAlert(){
+
+        TimePicker timePicker;
+        timePicker = (TimePicker) findViewById(R.id.timePicker1);
+
+        int hour_t = timePicker.getCurrentHour();
+        int min_t = timePicker.getCurrentMinute();
+
+        System.out.println("Hour T:" + hour_t);
+        System.out.println("Minute T:" + min_t);
+
+        long sec_t = hour_t * 60 * 60 + min_t * 60;
+        sec_t = sec_t * 1000;
+
+        OffsetTime time = OffsetTime.now();
+        long hour_s = time.getHour();
+        long min_s = time.getMinute();
+
+        System.out.println("Hour S:" + hour_s);
+        System.out.println("Minute S:" + min_s);
+
+        long sec_s = hour_s * 60 * 60 + min_s * 60;
+        sec_s = sec_s * 1000;
+
+        long sec_d;
+
+        System.out.println("Seconds T:" + sec_t);
+        System.out.println("Seconds S:" + sec_s);
+        sec_d = sec_t - sec_s;
+
+        System.out.println(sec_d);
+
+        Intent intent = new Intent(this, MyBroadcastReceiver.class);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(
+                this.getApplicationContext(), 234324243, intent, 0);
+        AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
+        alarmManager.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis()
+                + (10000), pendingIntent);
+        Toast.makeText(this, "Alarm set",Toast.LENGTH_LONG).show();
+    }
+
+    public void stop() {
+        MyBroadcastReceiver cl = new MyBroadcastReceiver();
+        cl.stop();
+    }
+}
+
+
+
+
+
+
+
+#MyBroadcastReceiver.java
+
+
+public class MyBroadcastReceiver extends BroadcastReceiver {
+    static MediaPlayer mp;
+
+    @Override
+    public void onReceive(Context context, Intent intent) {
+        mp=MediaPlayer.create(context, R.raw.alarm1);
+        mp.start();
+        Toast.makeText(context, "Alarm is Ringing Now", Toast.LENGTH_LONG).show();
+    }
+
+    public void stop(){
+        mp.stop();
+        mp.release();
+    }
+}
+
+
+
+
+# AndroidManifest.xml
+
+
+
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.example.timerapplication" >
+
+    <application
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.TimerApplication" >
+        <activity android:name=".MainActivity" android:exported="true" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <receiver android:name="MyBroadcastReceiver" >
+        </receiver>
+    </application>
+
+</manifest>
