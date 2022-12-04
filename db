@@ -1,0 +1,273 @@
+# ActivityMain.java
+
+
+package com.example.dbmodel;
+
+import androidx.appcompat.app.AppCompatActivity;
+
+import android.content.Intent;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+
+public class MainActivity extends AppCompatActivity {
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        Button insert_button = findViewById(R.id.insert_button);
+        Button display_button = findViewById(R.id.display_button);
+        Button update_button = findViewById(R.id.update_button);
+        Button delete_button = findViewById(R.id.delete_button);
+
+
+        insert_button.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view) {
+
+                Intent insert_intent = new Intent(getApplicationContext(), Insert.class);
+
+                startActivity(insert_intent);
+
+            }
+        });
+
+        display_button.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view) {
+                Intent display_intent = new Intent(getApplicationContext(), Display.class);
+                startActivity(display_intent);
+
+            }
+        });
+
+        update_button.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view) {
+                Intent update_intent = new Intent(getApplicationContext(), Update.class);
+                startActivity(update_intent);
+
+            }
+        });
+
+        delete_button.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view) {
+                Intent delete_intent = new Intent(getApplicationContext(), Delete.class);
+                startActivity(delete_intent);
+
+            }
+        });
+
+
+    }
+}
+
+
+
+# DBHelper.java
+
+
+package com.example.dbmodel;
+
+import android.content.ContentValues;
+import android.content.Context;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteOpenHelper;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+
+public class DbHelper extends SQLiteOpenHelper {
+
+    private static final String DATABASE_NAME="studentDB.db";
+
+    public DbHelper(Context context) {
+        super(context, DATABASE_NAME, null, 1);
+    }
+
+    @Override
+    public void onCreate(SQLiteDatabase sqLiteDatabase)
+    {
+        String create_table_query = "CREATE TABLE students(Name TEXT, Address TEXT, Phone TEXT PRIMARY KEY, Email TEXT)";
+        sqLiteDatabase.execSQL(create_table_query);
+    }
+
+    @Override
+    public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i1) {
+
+        sqLiteDatabase.execSQL("DROP TABLE IF EXISTS students");
+        onCreate(sqLiteDatabase);
+
+    }
+
+
+    Boolean insertStudent(String Name, String Address, String Phone, String Email){
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put("Name",Name);
+        values.put("Address",Address);
+        values.put("Phone",Phone);
+        values.put("Email",Email);
+
+        long i = db.insert("students",null, values);
+
+        if (i==-1){
+            return false;
+        }else{
+            return true;
+        }
+    }
+
+
+
+
+    Boolean updateStudent(String Phone,String Name, String Address, String Email)
+    {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put("Name",Name);
+        values.put("Address",Address);
+        values.put("Email",Email);
+
+
+        int i = db.update("students",values,"Phone=? ",new String[]{Phone});
+        if(i>0){
+            return true;
+        }
+        return false;
+    }
+
+    ArrayList<ArrayList<String>> getAllStudents()
+    {
+        ArrayList<ArrayList<String>> result = new ArrayList();
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cur = db.rawQuery("SELECT * FROM students",null);
+        while(cur.moveToNext()){
+            ArrayList<String> data = new ArrayList();
+            data.add(cur.getString(0));
+            data.add(cur.getString(1));
+            data.add(cur.getString(2));
+            data.add(cur.getString(3));
+            result.add(data);
+//            for(ArrayList<String> d : result){
+//                for(String a: d){
+//                    System.out.println(a);
+//                }
+//            }
+        }
+
+
+        return result;
+
+    }
+
+    Boolean deleteStudent(String Name){
+
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        int i = db.delete("students","Name=?",new String[]{Name});
+        if(i>0){
+            return true;
+        }
+        return false;
+    }
+}
+
+
+
+
+# Insert.java
+
+
+package com.example.dbmodel;
+
+import androidx.appcompat.app.AppCompatActivity;
+
+import android.content.Intent;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.Toast;
+
+public class Insert extends AppCompatActivity {
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_insert);
+
+        DbHelper db = new DbHelper(this);
+
+        Button submit_button = findViewById(R.id.submit);
+        EditText name_et = findViewById(R.id.name);
+        EditText address_et = findViewById(R.id.address);
+        EditText phone_et = findViewById(R.id.phone);
+        EditText email_et = findViewById(R.id.email);
+        submit_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String name = name_et.getText().toString();
+                String address = address_et.getText().toString();
+                String phone = phone_et.getText().toString();
+                String email = email_et.getText().toString();
+
+                if( name.equals("") || address.equals("") || phone.equals("") || email.equals("") ){
+                    Toast.makeText(getApplicationContext(), "All fields are mandatory", Toast.LENGTH_LONG).show();
+                }
+                else
+                {
+                    Boolean result = db.insertStudent(name,address,phone,email);
+                    if (result){
+                        Toast.makeText(getApplicationContext(),"Data Added!",Toast.LENGTH_SHORT).show();
+                        Intent display_intent = new Intent(getApplicationContext(), Display.class);
+                        display_intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                        startActivity(display_intent);
+
+                    }else{
+                        Toast.makeText(getApplicationContext(),"Unsuccessful!",Toast.LENGTH_SHORT).show();
+                    }
+                }
+            }
+        });
+
+
+    }
+}
+
+
+# Display
+
+package com.example.dbmodel;
+
+import androidx.appcompat.app.AppCompatActivity;
+
+import android.os.Bundle;
+import android.view.ViewGroup;
+import android.widget.LinearLayout;
+import android.widget.TableLayout;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.Arrays;
+
+public class Display extends AppCompatActivity {
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_display);
+
+        LinearLayout list = findViewById(R.id.list);
+
+        DbHelper db = new DbHelper(this);
+//
+        ArrayList<ArrayList<String>> result = db.getAllStudents();
