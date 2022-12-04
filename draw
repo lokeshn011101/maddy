@@ -1,0 +1,84 @@
+# MainActivity.java
+
+
+package com.example.learn_draw;
+
+import androidx.appcompat.app.AppCompatActivity;
+
+import android.graphics.Color;
+import android.os.Bundle;
+
+public class MainActivity extends AppCompatActivity {
+
+    MyCanvas myCanvas;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+//        setContentView(R.layout.activity_main);
+
+        myCanvas = new MyCanvas(this);
+        myCanvas.setBackgroundColor(Color.RED);
+
+        setContentView(myCanvas);
+    }
+}
+
+
+
+# MyCanvas
+
+
+package com.example.learn_draw;
+
+import android.content.Context;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.view.View;
+
+public class MyCanvas extends View {
+
+    Paint paint;
+
+    public MyCanvas(Context context) {
+        super(context);
+        paint = new Paint();
+    }
+
+    @Override
+    protected void onDraw(Canvas canvas) {
+
+        super.onDraw(canvas);
+        paint.setColor(Color.BLUE);
+        paint.setStrokeWidth(3);
+
+        canvas.drawRect(canvas.getWidth()/3, canvas.getHeight()/3, canvas.getWidth()/2, canvas.getHeight()/2, paint);
+    }
+}
+
+
+
+
+
+
+# activity_main.java
+
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Hello World!"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
