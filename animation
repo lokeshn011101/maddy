@@ -1,0 +1,221 @@
+# Go through the intructions
+
+
+res -> anim -> [blink.xml, fade.xml, move.xml, rotate.xml, slide.xml, zoom.xml]
+
+res -> drawable -> (download a .jpeg image)
+
+
+
+
+
+# MainActivity.java
+
+public class MainActivity extends AppCompatActivity {
+
+    ImageView imageView;
+    Button blinkBTN, rotateBTN, fadeBTN, moveBTN, slideBTN, zoomBTN, stopBTN;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState)
+    {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        imageView = findViewById(R.id.imageview);
+        blinkBTN = findViewById(R.id.BTNblink);
+        rotateBTN = findViewById(R.id.BTNrotate);
+        fadeBTN = findViewById(R.id.BTNfade);
+        moveBTN = findViewById(R.id.BTNmove);
+        slideBTN = findViewById(R.id.BTNslide);
+        zoomBTN = findViewById(R.id.BTNzoom);
+        stopBTN = findViewById(R.id.BTNstop);
+
+        blinkBTN.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // To add blink animation
+                Animation animation = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.blink);
+                imageView.startAnimation(animation);
+
+            }
+        });
+
+        rotateBTN.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // To add rotate animation
+                Animation animation = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.rotate);
+                imageView.startAnimation(animation);
+            }
+        });
+        fadeBTN.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // To add fade animation
+                Animation animation = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fade);
+                imageView.startAnimation(animation);
+            }
+        });
+        moveBTN.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // To add move animation
+                Animation animation = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.move);
+                imageView.startAnimation(animation);
+            }
+        });
+        slideBTN.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // To add slide animation
+                Animation animation = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.slide);
+                imageView.startAnimation(animation);
+            }
+        });
+        zoomBTN.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // To add zoom animation
+                Animation animation = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.zoom);
+                imageView.startAnimation(animation);
+            }
+        });
+        stopBTN.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // To stop the animation going on imageview
+                imageView.clearAnimation();
+            }
+        });
+    }
+}
+
+
+# keep image as image view in layout
+
+<ImageView
+        android:id="@+id/imageview"
+        android:layout_width="200dp"
+        android:layout_height="200dp"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="40dp"
+        android:contentDescription="@string/app_name"
+        android:src="@drawable/me" />
+
+
+
+
+
+
+# blink.xml
+
+<?xml version="1.0" encoding="utf-8"?>
+<set xmlns:android="http://schemas.android.com/apk/res/android">
+    <alpha android:fromAlpha="0.0"
+        android:toAlpha="1.0"
+        android:interpolator="@android:anim/accelerate_interpolator"
+        android:duration="500"
+        android:repeatMode="reverse"
+        android:repeatCount="infinite"/>
+</set>
+
+
+
+
+
+# zoom.xml
+
+<?xml version="1.0" encoding="utf-8"?>
+<set xmlns:android="http://schemas.android.com/apk/res/android"
+    android:fillAfter="true" >
+
+    <scale
+        android:duration="500"
+        android:fromXScale="1.0"
+        android:fromYScale="1.0"
+        android:interpolator="@android:anim/linear_interpolator"
+        android:toXScale="2.0"
+        android:toYScale="2.0" />
+</set>
+
+
+
+# fade.xml
+
+<?xml version="1.0" encoding="utf-8"?>
+<set xmlns:android="http://schemas.android.com/apk/res/android"
+    android:interpolator="@android:anim/accelerate_interpolator">
+
+    <!-- duration is the time for which animation will work-->
+    <alpha
+        android:duration="1000"
+        android:fromAlpha="0"
+        android:toAlpha="1" />
+
+    <alpha
+        android:duration="1000"
+        android:fromAlpha="1"
+        android:startOffset="2000"
+        android:toAlpha="0" />
+
+</set>
+
+
+
+
+# move.xml
+
+<?xml version="1.0" encoding="utf-8"?>
+<set
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:interpolator="@android:anim/linear_interpolator"
+    android:fillAfter="true">
+
+    <translate
+        android:fromXDelta="0%p"
+        android:toXDelta="75%p"
+        android:duration="700" />
+</set>
+
+
+
+# rotate.xml
+
+<?xml version="1.0" encoding="utf-8"?>
+<set
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <rotate
+        android:duration="6000"
+        android:fromDegrees="0"
+        android:pivotX="50%"
+        android:pivotY="50%"
+        android:toDegrees="360" />
+
+    <rotate
+        android:duration="6000"
+        android:fromDegrees="360"
+        android:pivotX="50%"
+        android:pivotY="50%"
+        android:startOffset="5000"
+        android:toDegrees="0" />
+
+</set>
+
+
+
+#slide.xml
+
+<?xml version="1.0" encoding="utf-8"?>
+<set xmlns:android="http://schemas.android.com/apk/res/android"
+    android:fillAfter="true" >
+    <scale
+        android:duration="500"
+        android:fromXScale="1.0"
+        android:fromYScale="1.0"
+        android:interpolator="@android:anim/linear_interpolator"
+        android:toXScale="1.0"
+        android:toYScale="0.0" />
+</set>
+
+
+
