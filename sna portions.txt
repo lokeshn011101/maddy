@@ -1,0 +1,18 @@
+Portions for SNA CAT3 
+IV Unit 
+    Only Triads
+
+V Unit
+various kinds of Node-Edge diagrams
+user-centric, content-centric and hybrid visualization
+matrix based & node-link based comparison
+different visualization solutions when scaling large network
+matrix + node-link combined working
+Girvan-Newman algorithm working wrt for a given network in detecting communities
+Networkx code to create a network of nodes, link  (different colors), weight and layout 
+NetworkX – DFS and BFS algorithm and commands
+Applications of social network analysis (chapter 29)
+
+Book - handbook-of-social-network-technologies-and-applns-b-furht-springer-2010-bbs
+
+Chapter 27, Chapter 28 and chapter 29
