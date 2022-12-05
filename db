@@ -1,194 +1,87 @@
-# ActivityMain.java
+# MainActivity
 
-
-package com.example.dbmodel;
+package com.example.dbcrud;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
+
+    Button bc, bi, br, bu, bd;
+    SQLiteDatabase db;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Button insert_button = findViewById(R.id.insert_button);
-        Button display_button = findViewById(R.id.display_button);
-        Button update_button = findViewById(R.id.update_button);
-        Button delete_button = findViewById(R.id.delete_button);
+        bc = findViewById(R.id.create);
+        bi = findViewById(R.id.insert);
+        br = findViewById(R.id.retrieve);
+        bu = findViewById(R.id.update);
+        bd = findViewById(R.id.delete);
 
+        db = openOrCreateDatabase("db", MODE_PRIVATE, null);
 
-        insert_button.setOnClickListener(new View.OnClickListener(){
+        bc.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
-                Intent insert_intent = new Intent(getApplicationContext(), Insert.class);
-
-                startActivity(insert_intent);
-
+                db.execSQL("DROP TABLE IF EXISTS persons;");
+                db.execSQL("CREATE TABLE persons(name VARCHAR(50), address VARCHAR(50), phone VARCHAR(50), email VARCHAR(50));");
+                Toast.makeText(getApplicationContext(), "Created Table persons!", Toast.LENGTH_SHORT).show();
             }
         });
 
-        display_button.setOnClickListener(new View.OnClickListener(){
+        bi.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent display_intent = new Intent(getApplicationContext(), Display.class);
-                startActivity(display_intent);
-
+                Intent myIntent = new Intent(MainActivity.this, Insert.class);
+                startActivity(myIntent);
             }
         });
 
-        update_button.setOnClickListener(new View.OnClickListener(){
+        br.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent update_intent = new Intent(getApplicationContext(), Update.class);
-                startActivity(update_intent);
-
+                Intent myIntent = new Intent(MainActivity.this, Retrieve.class);
+                startActivity(myIntent);
             }
         });
 
-        delete_button.setOnClickListener(new View.OnClickListener(){
+        bu.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent delete_intent = new Intent(getApplicationContext(), Delete.class);
-                startActivity(delete_intent);
-
+                Intent myIntent = new Intent(MainActivity.this, Update.class);
+                startActivity(myIntent);
             }
         });
 
+        bd.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent myIntent = new Intent(MainActivity.this, Delete.class);
+                startActivity(myIntent);
+            }
+        });
 
     }
 }
 
 
 
-# DBHelper.java
+# Insert
 
-
-package com.example.dbmodel;
-
-import android.content.ContentValues;
-import android.content.Context;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteOpenHelper;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-
-public class DbHelper extends SQLiteOpenHelper {
-
-    private static final String DATABASE_NAME="studentDB.db";
-
-    public DbHelper(Context context) {
-        super(context, DATABASE_NAME, null, 1);
-    }
-
-    @Override
-    public void onCreate(SQLiteDatabase sqLiteDatabase)
-    {
-        String create_table_query = "CREATE TABLE students(Name TEXT, Address TEXT, Phone TEXT PRIMARY KEY, Email TEXT)";
-        sqLiteDatabase.execSQL(create_table_query);
-    }
-
-    @Override
-    public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i1) {
-
-        sqLiteDatabase.execSQL("DROP TABLE IF EXISTS students");
-        onCreate(sqLiteDatabase);
-
-    }
-
-
-    Boolean insertStudent(String Name, String Address, String Phone, String Email){
-        SQLiteDatabase db = this.getWritableDatabase();
-        ContentValues values = new ContentValues();
-        values.put("Name",Name);
-        values.put("Address",Address);
-        values.put("Phone",Phone);
-        values.put("Email",Email);
-
-        long i = db.insert("students",null, values);
-
-        if (i==-1){
-            return false;
-        }else{
-            return true;
-        }
-    }
-
-
-
-
-    Boolean updateStudent(String Phone,String Name, String Address, String Email)
-    {
-        SQLiteDatabase db = this.getWritableDatabase();
-        ContentValues values = new ContentValues();
-        values.put("Name",Name);
-        values.put("Address",Address);
-        values.put("Email",Email);
-
-
-        int i = db.update("students",values,"Phone=? ",new String[]{Phone});
-        if(i>0){
-            return true;
-        }
-        return false;
-    }
-
-    ArrayList<ArrayList<String>> getAllStudents()
-    {
-        ArrayList<ArrayList<String>> result = new ArrayList();
-
-        SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cur = db.rawQuery("SELECT * FROM students",null);
-        while(cur.moveToNext()){
-            ArrayList<String> data = new ArrayList();
-            data.add(cur.getString(0));
-            data.add(cur.getString(1));
-            data.add(cur.getString(2));
-            data.add(cur.getString(3));
-            result.add(data);
-//            for(ArrayList<String> d : result){
-//                for(String a: d){
-//                    System.out.println(a);
-//                }
-//            }
-        }
-
-
-        return result;
-
-    }
-
-    Boolean deleteStudent(String Name){
-
-        SQLiteDatabase db = this.getWritableDatabase();
-
-        int i = db.delete("students","Name=?",new String[]{Name});
-        if(i>0){
-            return true;
-        }
-        return false;
-    }
-}
-
-
-
-
-# Insert.java
-
-
-package com.example.dbmodel;
+package com.example.dbcrud;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -197,77 +90,233 @@ import android.widget.Toast;
 
 public class Insert extends AppCompatActivity {
 
+    Button button;
+    EditText name, address, phone, email;
+    SQLiteDatabase db;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_insert);
 
-        DbHelper db = new DbHelper(this);
+        name = findViewById(R.id.name);
+        address = findViewById(R.id.address);
+        phone = findViewById(R.id.phone);
+        email = findViewById(R.id.email);
 
-        Button submit_button = findViewById(R.id.submit);
-        EditText name_et = findViewById(R.id.name);
-        EditText address_et = findViewById(R.id.address);
-        EditText phone_et = findViewById(R.id.phone);
-        EditText email_et = findViewById(R.id.email);
-        submit_button.setOnClickListener(new View.OnClickListener() {
+        button = findViewById(R.id.button);
+
+        db = openOrCreateDatabase("db", MODE_PRIVATE, null);
+
+        button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String name = name_et.getText().toString();
-                String address = address_et.getText().toString();
-                String phone = phone_et.getText().toString();
-                String email = email_et.getText().toString();
 
-                if( name.equals("") || address.equals("") || phone.equals("") || email.equals("") ){
-                    Toast.makeText(getApplicationContext(), "All fields are mandatory", Toast.LENGTH_LONG).show();
+                try{
+                    db.execSQL("INSERT INTO persons VALUES(?, ?, ?, ?);",
+                            new String[]{name.getText().toString(),
+                                    address.getText().toString(),
+                                    phone.getText().toString(),
+                                    email.getText().toString()});
+
+                    Toast.makeText(getApplicationContext(), "Insert Successful!", Toast.LENGTH_SHORT).show();
                 }
-                else
+                catch (Exception e)
                 {
-                    Boolean result = db.insertStudent(name,address,phone,email);
-                    if (result){
-                        Toast.makeText(getApplicationContext(),"Data Added!",Toast.LENGTH_SHORT).show();
-                        Intent display_intent = new Intent(getApplicationContext(), Display.class);
-                        display_intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                        startActivity(display_intent);
-
-                    }else{
-                        Toast.makeText(getApplicationContext(),"Unsuccessful!",Toast.LENGTH_SHORT).show();
-                    }
+                    Toast.makeText(getApplicationContext(), "Insert Failed!", Toast.LENGTH_SHORT).show();
+                    e.printStackTrace();
                 }
+
             }
         });
+    }
+}
 
+
+# Retrieve
+
+package com.example.dbcrud;
+
+import androidx.appcompat.app.AppCompatActivity;
+
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+import android.widget.TextView;
+import android.widget.Toast;
+
+public class Retrieve extends AppCompatActivity {
+
+    SQLiteDatabase db;
+    Cursor rs;
+
+    Button button;
+    TextView textViewR;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_retrieve);
+
+        db = openOrCreateDatabase("db", MODE_PRIVATE, null);
+
+        textViewR = findViewById(R.id.TextViewR);
+
+        button = findViewById(R.id.buttonR);
+
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                try {
+
+                    rs = db.rawQuery("SELECT * FROM persons;", null);
+//                    rs = db.rawQuery("SELECT * FROM persons WHERE phone = ?;", new String[]{9445502654});
+
+                    String msg = "";
+
+//                    For only one record
+//                    rs.moveToFirst()
+
+                    while(rs.moveToNext())
+                    {
+                        msg += rs.getString(0) + " " + rs.getString(1) + " " + rs.getString(2) + " " + rs.getString(3) + "\n";
+                    }
+
+                    textViewR.setText(msg);
+
+                    if(msg == ""){
+                        textViewR.setText("No records inserted!");
+                    }
+
+                    Toast.makeText(getApplicationContext(), "Retrieve Successful!", Toast.LENGTH_SHORT).show();
+                }
+                catch (Exception e){
+                    Toast.makeText(getApplicationContext(), "Retrieve Failed!", Toast.LENGTH_SHORT).show();
+                    e.printStackTrace();
+                }
+
+            }
+        });
+    }
+}
+
+
+# Delete
+
+
+package com.example.dbcrud;
+
+import androidx.appcompat.app.AppCompatActivity;
+
+import android.database.sqlite.SQLiteDatabase;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.Toast;
+
+public class Delete extends AppCompatActivity {
+
+    SQLiteDatabase db;
+
+    Button button;
+    EditText name;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_delete);
+
+        db = openOrCreateDatabase("db", MODE_PRIVATE, null);
+
+        button = findViewById(R.id.buttonD);
+        name = findViewById(R.id.nameD);
+
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                try {
+
+                    db.execSQL("DELETE FROM persons WHERE name = ?;", new String []{name.getText().toString()});
+                    Toast.makeText(getApplicationContext(), "Delete Successful!", Toast.LENGTH_SHORT).show();
+
+                }
+                catch (Exception e)
+                {
+                    Toast.makeText(getApplicationContext(), "Delete Failed!", Toast.LENGTH_SHORT).show();
+                    e.printStackTrace();
+                }
+
+            }
+        });
+    }
+}
+
+
+# Update
+
+package com.example.dbcrud;
+
+import androidx.appcompat.app.AppCompatActivity;
+
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.Toast;
+
+public class Update extends AppCompatActivity {
+
+    SQLiteDatabase db;
+    Cursor rs;
+
+    Button button;
+    EditText name, address, phone, email;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_update);
+
+        name = findViewById(R.id.nameU);
+        address = findViewById(R.id.addressU);
+        phone = findViewById(R.id.phoneU);
+        email = findViewById(R.id.emailU);
+
+        button = findViewById(R.id.buttonU);
+
+        db = openOrCreateDatabase("db", MODE_PRIVATE, null);
+
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                try {
+
+                    db.execSQL("UPDATE persons SET address = ?, phone = ?, email = ? WHERE name = ?;",
+                            new String[]{address.getText().toString(),
+                                    phone.getText().toString(),
+                                    email.getText().toString(),
+                                    name.getText().toString()});
+
+                    Toast.makeText(getApplicationContext(), "Update Successful!", Toast.LENGTH_SHORT).show();
+                }
+                catch (Exception e){
+                    Toast.makeText(getApplicationContext(), "Update Failed!", Toast.LENGTH_SHORT).show();
+                    e.printStackTrace();
+                }
+
+
+            }
+        });
 
     }
 }
 
 
-# Display
-
-package com.example.dbmodel;
-
-import androidx.appcompat.app.AppCompatActivity;
-
-import android.os.Bundle;
-import android.view.ViewGroup;
-import android.widget.LinearLayout;
-import android.widget.TableLayout;
-import android.widget.TextView;
-import android.widget.Toast;
-
-import java.lang.reflect.Array;
-import java.util.ArrayList;
-import java.util.Arrays;
-
-public class Display extends AppCompatActivity {
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_display);
-
-        LinearLayout list = findViewById(R.id.list);
-
-        DbHelper db = new DbHelper(this);
-//
-        ArrayList<ArrayList<String>> result = db.getAllStudents();
