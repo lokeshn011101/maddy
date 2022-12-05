@@ -1,0 +1,111 @@
+# Mainactivity.java
+
+package com.example.dynamicwebpage;
+
+import androidx.appcompat.app.AppCompatActivity;
+
+import android.os.Bundle;
+import android.webkit.WebSettings;
+import android.webkit.WebView;
+
+public class MainActivity extends AppCompatActivity {
+
+    WebView webView;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        webView = findViewById(R.id.webView);
+
+        WebAppClient webViewClient = new WebAppClient(MainActivity.this);
+
+        webView.setWebViewClient(webViewClient);
+
+//        https - very important
+//        webView.loadUrl("https://www.ssn.edu.in");
+
+
+//        Load own html - mimeType and encoding is important
+        webView.loadData("<html>" +
+                "<body style=\"background-color:yellow; text-align:center;\">" +
+                "<br><br>" +
+                "<h1 style=\"text-decoration: underline\">Nivedhitha's<br>Website</h1>" +
+                "<br><br>" +
+                "<h2>" +
+                "<p>Hello, Welcome !!!!</p>" +
+                "<b>Thanks for visiting my website !!!!</b><br><br>" +
+                "<i>Have a nice day!!!!</i><br><br>" +
+                "</h2>" +
+                "<br><br><br>" +
+                "<h3>" +
+                "<em>Visit my website again</em><br><br>" +
+                "</h3>" +
+                "</body>" +
+                "</html>", "text/html", "UTF-8");
+    }
+}
+
+
+# WebAppClient.java
+
+
+package com.example.dynamicwebpage;
+
+import androidx.appcompat.app.AppCompatActivity;
+
+import android.app.Activity;
+import android.content.Intent;
+import android.net.Uri;
+import android.os.Bundle;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
+
+public class WebAppClient extends WebViewClient {
+
+    Activity activity;
+    WebAppClient(Activity activity) {
+        this.activity = activity;
+    }
+
+    @Override
+    public boolean shouldOverrideUrlLoading(WebView webView, String url) {
+        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+        activity.startActivity(intent);
+        return true;
+    }
+}
+
+
+activity_main.xml
+
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
+
+    <WebView
+        android:id="@+id/webView"
+        android:layout_width="409dp"
+        android:layout_height="729dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+</androidx.constraintlayout.widget.ConstraintLayout>
+
+activiy_web_app_client.xml
+
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".WebAppClient">
+
+</androidx.constraintlayout.widget.ConstraintLayout>
